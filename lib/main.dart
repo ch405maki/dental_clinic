@@ -3,6 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:webview_flutter_android/webview_flutter_android.dart';
 import 'package:webview_flutter_wkwebview/webview_flutter_wkwebview.dart';
+import 'package:connectivity_plus/connectivity_plus.dart'; // Import connectivity_plus
+import 'dart:async';
 import 'dart:io'; // For Platform check
 
 void main() {
@@ -18,7 +20,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Dental Clinic',
+      title: 'Emes Da Dental Clinic',
       home: DentalClinicWebView(),
       debugShowCheckedModeBanner: false,
     );
@@ -32,10 +34,26 @@ class DentalClinicWebView extends StatefulWidget {
 
 class _DentalClinicWebViewState extends State<DentalClinicWebView> {
   late final WebViewController _controller;
+  late StreamSubscription<ConnectivityResult> _connectivitySubscription;
+  bool _isConnected = true;
 
   @override
   void initState() {
     super.initState();
+
+    // Initialize connectivity listener
+    _connectivitySubscription = Connectivity().onConnectivityChanged.listen((ConnectivityResult result) {
+      setState(() {
+        _isConnected = result != ConnectivityResult.none;
+      });
+      if (!_isConnected) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('No internet connection')),
+        );
+      } else {
+        _controller.reload();
+      }
+    });
 
     final PlatformWebViewControllerCreationParams params;
     if (WebViewPlatform.instance is WebKitWebViewPlatform) {
@@ -59,20 +77,20 @@ class _DentalClinicWebViewState extends State<DentalClinicWebView> {
           onPageFinished: (String url) {
             // Inject JavaScript to disable zooming
             _controller.runJavaScript(
-              "document.querySelector('meta[name=\"viewport\"]').setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no');"
-            );
+                "document.querySelector('meta[name=\"viewport\"]').setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no');");
           },
           onHttpError: (HttpResponseError error) {},
           onWebResourceError: (WebResourceError error) {},
           onNavigationRequest: (NavigationRequest request) {
-            if (request.url.startsWith('https://mapa-recordmanagementsystem.com/')) {
+            if (request.url
+                .startsWith('https://emesdadentalclinic.com/login')) {
               return NavigationDecision.prevent;
             }
             return NavigationDecision.navigate;
           },
         ),
       )
-      ..loadRequest(Uri.parse('https://mapa-recordmanagementsystem.com/'));
+      ..loadRequest(Uri.parse('https://emesdadentalclinic.com/login'));
 
     if (Platform.isAndroid) {
       // Enable debugging for Android WebView
@@ -81,6 +99,12 @@ class _DentalClinicWebViewState extends State<DentalClinicWebView> {
       (_controller.platform as AndroidWebViewController)
           .setMediaPlaybackRequiresUserGesture(false);
     }
+  }
+
+  @override
+  void dispose() {
+    _connectivitySubscription.cancel();
+    super.dispose();
   }
 
   @override
@@ -94,7 +118,9 @@ class _DentalClinicWebViewState extends State<DentalClinicWebView> {
           title: Text(''),
         ),
       ),
-      body: WebViewWidget(controller: _controller),
+      body: _isConnected
+          ? WebViewWidget(controller: _controller)
+          : Center(child: Text('No internet connection')),
     );
   }
 }
