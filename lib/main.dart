@@ -172,7 +172,7 @@ class _DentalClinicWebViewState extends State<DentalClinicWebView>
           },
           onNavigationRequest: (NavigationRequest request) {
             if (request.url
-                .startsWith('https://ksudots.com/login')) {
+                .startsWith('https://emesdadentalclinic.com/login')) {
               return NavigationDecision.prevent;
             }
             return NavigationDecision.navigate;
@@ -230,7 +230,7 @@ class _DentalClinicWebViewState extends State<DentalClinicWebView>
         _isConnected = true;
         _isLoading = false;
         _controller
-            .loadRequest(Uri.parse('https://ksudots.com/login'));
+            .loadRequest(Uri.parse('https://emesdadentalclinic.com/login'));
       });
     }
   }
