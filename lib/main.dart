@@ -39,8 +39,9 @@ class OnboardingScreen extends StatelessWidget {
         children: [
           OnboardingPage(
             imagePath: 'assets/images/image1.png',
-            title: 'Welcome to Dental Clinic',
-            description: 'Your health is our priority.',
+            title: 'KSU Dental Clinic',
+            description:
+                'Experience exceptional dental care where your health and satisfaction are our top priority.',
             onNextPressed: () => _pageController.nextPage(
               duration: Duration(milliseconds: 300),
               curve: Curves.easeInOut,
@@ -48,8 +49,9 @@ class OnboardingScreen extends StatelessWidget {
           ),
           OnboardingPage(
             imagePath: 'assets/images/image2.png',
-            title: 'Book Appointments Easily',
-            description: 'Schedule your appointments with ease.',
+            title: 'Book Your Appointment Online"',
+            description:
+                'Conveniently schedule your dental visit in just a few clicks.',
             onNextPressed: () => Navigator.pushReplacement(
               context,
               MaterialPageRoute(builder: (context) => DentalClinicWebView()),
@@ -171,8 +173,7 @@ class _DentalClinicWebViewState extends State<DentalClinicWebView>
             }
           },
           onNavigationRequest: (NavigationRequest request) {
-            if (request.url
-                .startsWith('https://ksudots.com/login')) {
+            if (request.url.startsWith('https://ksudentalclinic.com/login')) {
               return NavigationDecision.prevent;
             }
             return NavigationDecision.navigate;
@@ -229,8 +230,7 @@ class _DentalClinicWebViewState extends State<DentalClinicWebView>
       setState(() {
         _isConnected = true;
         _isLoading = false;
-        _controller
-            .loadRequest(Uri.parse('https://ksudots.com/login'));
+        _controller.loadRequest(Uri.parse('https://ksudentalclinic.com/login'));
       });
     }
   }
